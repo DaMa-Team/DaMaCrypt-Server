@@ -3,7 +3,7 @@ DaMaCrypt-Server
 
 Java based, encrypted chat project
 
-This is the client-side of the DaMa-Crypt chat project.
+This is the server-side of the DaMa-Crypt chat project.
 
 The goal of DaMa-Crypt is to grant a encrypted chat system to everyone. The messages you send to your chat partners are your private stuff. Nobody should have the right to read and know what you're talking about.
 
