@@ -22,8 +22,8 @@ public class DaCryServer extends Thread implements Runnable {
 		_server = server;
 		openhandlers = new ArrayList<ClientHandling>();
 		openChats = new ArrayList<ChatSession>();
-		chatID_generator = new IDGenerater();
-		handlerID_generator = new IDGenerater();
+		chatID_generator = new IDGenerater(1000);
+		handlerID_generator = new IDGenerater(1000);
 	}
 
 	@Override

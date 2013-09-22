@@ -6,15 +6,16 @@ public class IDGenerater {
 	private ArrayList<Integer> free;
 	private int mainCounter;
 
-	public IDGenerater() {
+	public IDGenerater(int hightestID) {
 		free = new ArrayList<Integer>();
-		mainCounter = 0;
+		for(int i = 0; i<hightestID;i++){
+			free.add(i);
+		}	
 	}
 
 	public int getNewID() {
 		if (free.size() == 0) {
-			mainCounter++;
-			return mainCounter;
+			return -1;
 		} else {
 			int result = free.get(0);
 			free.remove(0);
@@ -23,10 +24,6 @@ public class IDGenerater {
 	}
 
 	public void releaseID(int release) {
-		if (release == mainCounter - 1) {
-			mainCounter--;
-		} else {
 			free.add(release);
-		}
 	}
 }
