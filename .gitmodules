@@ -1,0 +1,3 @@
+[submodule "src/Client"]
+	path = src/Client
+	url = https://github.com/DaMa-Team/DaMaCrypt-Common.git
