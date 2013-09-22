@@ -1,24 +1,42 @@
+/*
+ Copyright (C) 2013  Marcel Hollerbach, Daniel Haß
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import Client.Protocol.ChatMessage;
 import Client.Protocol.ChatSessionUser;
 import Client.Protocol.Protocol;
-import Client.Protocol.Types.ChatInvite;
 import Client.Protocol.Types.ChatKeyOffer;
 import Client.Protocol.Types.Common;
 import Client.Protocol.Types.Message;
 import Client.UserHandling.ChatSession;
 import Client.UserHandling.User;
 
+/**
+ * This class manages the Client - Server / Server - Client communication.
+ * 
+ * @author Marcel Hollerbach
+ * 
+ */
 public class ClientHandling extends Thread implements Runnable {
 	private User user;
 
@@ -54,25 +72,50 @@ public class ClientHandling extends Thread implements Runnable {
 
 	}
 
+	/**
+	 * Will sent a ChatInvition to the client side.
+	 * 
+	 * @param index
+	 * @throws IOException
+	 */
 	public void chatInvitation(Integer index) throws IOException {
 		chats.add(index);
-		ChatSession s = getChatSession(index);
-		// System.out.println("Writing chat: "
-		// + s.getPartner().getUser().getClientId() + " "
-		// + s.getInitiator().getUser().getClientId());
 		protocol.writeChatInvite(Common
 				.chatSessionToChatInvite(getChatSession(index)));
 	}
 
+	/**
+	 * Getter of the ID
+	 * 
+	 * @return This ID.
+	 */
 	public long getClientId() {
 		return user.getClientId();
 	}
 
+	/**
+	 * This will "write" a ChatSession to the client side.
+	 * 
+	 * Actually this is just writing the partner Cry to the client side.
+	 * 
+	 * To this time we are just having one to one Chats, there are no more than
+	 * two crys. The own one and the partner cry, the own one we are calculating
+	 * on the client side, we don't have to write this one.
+	 * 
+	 * @param s
+	 * @throws IOException
+	 */
 	public void writeChatSession(ChatSession s) throws IOException {
 		protocol.writeChatKeyOfferToClient(new ChatKeyOffer((int) s.getId(), s
 				.getPartner(getClientId()).getCry()));
 	}
 
+	/**
+	 * This will remove all the ChatSessions with the ID id from the
+	 * ClientHandling ChatSession list.
+	 * 
+	 * @param id
+	 */
 	public void checkForRemoval(long id) {
 		for (int i = 0; i < chats.size(); i++) {
 			if (chats.get(i) == id) {
@@ -87,6 +130,11 @@ public class ClientHandling extends Thread implements Runnable {
 		}
 	}
 
+	/**
+	 * Will write the OnlineList to the ClientSide.
+	 * 
+	 * @throws IOException
+	 */
 	public void sentOnlineList() throws IOException {
 		ArrayList<User> arrlist = new ArrayList<User>();
 		for (ClientHandling client : server.getOpenhandlers()) {
@@ -95,6 +143,12 @@ public class ClientHandling extends Thread implements Runnable {
 		protocol.writeOnlineList(arrlist);
 	}
 
+	/**
+	 * Will write a Message to the Client Side.
+	 * 
+	 * @param message
+	 * @throws IOException
+	 */
 	public void deliverMessage(Message message) throws IOException {
 		protocol.writeMessageToClient(message);
 	}
@@ -143,10 +197,6 @@ public class ClientHandling extends Thread implements Runnable {
 						ChatSession session = ChatSession.generateChatSession(
 								-1, init, guest);
 						int chatSessionID = server.registerChatSession(session);
-						// System.out.println("Init, Gust: "
-						// + init.getUser().getClientId() + " "
-						// + guest.getUser().getClientId()
-						// + " with chatSessionID :" + session.getId());
 						session.setId(chatSessionID);
 
 						chats.add(chatSessionID);
@@ -185,18 +235,39 @@ public class ClientHandling extends Thread implements Runnable {
 
 	}
 
+	/**
+	 * Short notation of the server.getChatSession(id) function.
+	 * 
+	 * @param index
+	 * @return
+	 */
 	private ChatSession getChatSession(int index) {
 		return server.getChatSession(index);
 	}
 
+	/**
+	 * Will return the ID and name as User.
+	 * 
+	 * @return
+	 */
 	public User getUser() {
 		return user;
 	}
 
+	/**
+	 * Will return the Client Synonym
+	 * 
+	 * @return
+	 */
 	public String getClientSynonym() {
 		return user.getName();
 	}
 
+	/**
+	 * Getter of the Socket.
+	 * 
+	 * @return
+	 */
 	public Socket getSocket() {
 		return client;
 	}
